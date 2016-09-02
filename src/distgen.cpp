@@ -80,13 +80,7 @@ static size_t get_tcount() {
 
 	if (tc > 0) return tc;
 
-#ifdef _OPENMP
-#pragma omp parallel
-#pragma omp master
-	tc = (size_t)omp_get_num_threads();
-#else
 	tc = 1;
-#endif
 
 	return tc;
 }

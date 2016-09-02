@@ -41,6 +41,8 @@ extern int doWrite;
 extern size_t iter;
 extern int verbose;
 
+
+
 double wtime(void);
 
 void addDist(u64 size);
