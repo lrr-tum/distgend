@@ -22,7 +22,6 @@
 
 static pthread_t threads[DISTGEN_MAXTHREADS];
 static pthread_attr_t thread_attr[DISTGEN_MAXTHREADS];
-static distgend_initT system_config;
 
 // make sure that gcd(size,diff) is 1 by increasing size, return size
 static int adjustSize(u64 size, u64 diff);
@@ -153,8 +152,8 @@ void initBufs() {
 	}
 
 	// initialize buffers in general
-	size_t thread_ids[system_config.number_of_threads];
-	for (size_t i = 0; i<system_config.number_of_threads; i++) {
+	size_t thread_ids[tcount];
+	for (size_t i = 0; i<tcount; i++) {
 		thread_ids[i] = i;
 		int res = pthread_create(&threads[i],
 		    			 &thread_attr[i],
@@ -162,7 +161,7 @@ void initBufs() {
 		assert(res == 0);
 	}
 	
-	for (size_t i = 0; i<system_config.number_of_threads; i++) {
+	for (size_t i = 0; i<tcount; i++) {
 		int res = pthread_join(threads[i], NULL);
 		assert(res == 0);
 	}

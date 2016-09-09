@@ -67,6 +67,9 @@ void distgend_init(distgend_initT init) {
 	// TODO we should compute this based on L3 size
 	addDist(50000000);
 
+	// set the number of threads to the maximum available in the system
+	tcount = init.number_of_threads;
+
 	set_affinity(init);
 
 	initBufs();
