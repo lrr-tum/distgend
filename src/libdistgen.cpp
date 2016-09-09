@@ -128,7 +128,7 @@ double distgend_is_membound(distgend_configT config) {
 
 static void *thread_func(void *arg) {
 	thread_argsT *thread_args = (thread_argsT*)arg;
-	double ret = 0.0;
+	double *ret = (double*)calloc(1, sizeof(double));
 
 	for (size_t i = 0; i < thread_args->config->number_of_threads; ++i) {
 		if (thread_args->tid == thread_args->config->threads_to_use[i]) {
@@ -140,11 +140,11 @@ static void *thread_func(void *arg) {
 			const double t2 = wtime();
 
 			const double temp = taCount * 64.0 / 1024.0 / 1024.0 / 1024.0;
-			ret += temp / (t2 - t1);
+			*ret += temp / (t2 - t1);
 		}
 	}
 
-	pthread_exit((void*)&ret);
+	pthread_exit((void*)ret);
 }
 
 
@@ -167,6 +167,7 @@ static double bench(distgend_configT config) {
 		int res = pthread_join(threads[i], (void**)&ret_tmp);
 		assert(res == 0);
 		ret += *ret_tmp;
+		free (ret_tmp);
 	}
 
 	return ret;
