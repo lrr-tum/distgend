@@ -75,16 +75,6 @@ static void printStats(size_t ii, double tDiff, u64 rDiff, u64 wDiff) {
 				1.0 / 1000.0 * clockFreq);
 }
 
-static size_t get_tcount() {
-	static size_t tc = 0;
-
-	if (tc > 0) return tc;
-
-	tc = 1;
-
-	return tc;
-}
-
 __attribute__((noreturn)) static void usage(char *argv0) {
 	fprintf(stderr, "Benchmark with threads accessing their own nested arrays at cache-line granularity\n\n"
 					"Usage: %s [Options] [-<iter>] [<dist1> [<dist2> ... ]]\n"
@@ -100,7 +90,7 @@ __attribute__((noreturn)) static void usage(char *argv0) {
 					"  -t <count>   set number of threads to use (def: %zu)\n"
 					"  -s <iter>    print perf.stats every few iterations (def: 0 = none)\n"
 					"  -v           be verbose\n",
-			argv0, clockFreqDef, get_tcount());
+			argv0, clockFreqDef, tcount);
 	fprintf(stderr, "\nNumbers can end in k/m/g for Kilo/Mega/Giga factor\n");
 	exit(1);
 }
@@ -172,19 +162,7 @@ void parseOptions(int argc, char *argv[]) {
 	if (clockFreq == 0) clockFreq = toU64(clockFreqDef, 0);
 
 	if (tcount == 0) {
-		// thread count is the default as given by OpenMP runtime
-		tcount = get_tcount();
-	} else {
-// overwrite thread count of OpenMP runtime
-#ifdef _OPENMP
-		omp_set_num_threads(tcount);
-#else
-		// compiled without OpenMP, cannot use more than 1 thread
-		if (tcount > 1) {
-			fprintf(stderr, "WARNING: OpenMP not available, running sequentially.\n");
-			tcount = 1;
-		}
-#endif
+		tcount = 1;
 	}
 
 	if (iters_perstat == 0) {

@@ -34,7 +34,7 @@ struct entry *buffer[DISTGEN_MAXTHREADS];
 
 // options (to be reset to default if 0)
 int distsUsed = 0;
-size_t tcount = 0; // number of threads to use
+size_t tcount = 1; // number of threads to use (default: 1)
 int pseudoRandom = 0;
 int depChain = 0;
 int doWrite = 0;
