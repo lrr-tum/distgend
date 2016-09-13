@@ -42,7 +42,6 @@ typedef struct thread_args {
 	size_t tid;
 } thread_argsT;
 
-
 // Prototypes
 static void set_affinity(distgend_initT init);
 static double bench(distgend_configT config);

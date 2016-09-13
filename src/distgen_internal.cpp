@@ -39,7 +39,7 @@ int pseudoRandom = 0;
 int depChain = 0;
 int doWrite = 0;
 size_t iter = 0;
-int verbose = 1;
+int verbose = 0;
 
 static u64 blocks, blockDiff;
 
@@ -85,7 +85,6 @@ void addDist(u64 size) {
 
 static void *thread_func(void *arg) {
 	size_t tid = *((size_t*)arg);
-//	assert(tcount == (size_t)omp_get_num_threads());
 	struct entry *buf;
 	u64 idx, blk, nextIdx;
 	u64 idxMax = blocks * BLOCKLEN / sizeof(struct entry);
@@ -165,7 +164,6 @@ void initBufs() {
 		int res = pthread_join(threads[i], NULL);
 		assert(res == 0);
 	}
-
 }
 
 // helper for adjustSize
