@@ -161,10 +161,6 @@ void parseOptions(int argc, char *argv[]) {
 	if (iter == 0) iter = 1000;
 	if (clockFreq == 0) clockFreq = toU64(clockFreqDef, 0);
 
-	if (tcount == 0) {
-		tcount = 1;
-	}
-
 	if (iters_perstat == 0) {
 		// no intermediate output
 		iters_perstat = iter;
