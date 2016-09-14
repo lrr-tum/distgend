@@ -83,7 +83,7 @@ void addDist(u64 size) {
 	distsUsed++;
 }
 
-static void *thread_func(void *arg) {
+static void *init_memory_per_thread(void *arg) {
 	size_t tid = *((size_t*)arg);
 	struct entry *buf;
 	u64 idx, blk, nextIdx;
@@ -156,7 +156,7 @@ void initBufs() {
 		thread_ids[i] = i;
 		int res = pthread_create(&threads[i],
 		    			 &thread_attr[i],
-		                         thread_func, &thread_ids[i]);
+		                         init_memory_per_thread, &thread_ids[i]);
 		assert(res == 0);
 	}
 	

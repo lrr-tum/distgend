@@ -126,7 +126,7 @@ double distgend_is_membound(distgend_configT config) {
 // INTERNAL FUNCTIONS
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void *thread_func(void *arg) {
+static void *thread_benchmark(void *arg) {
 	thread_argsT *thread_args = (thread_argsT*)arg;
 	double *ret = (double*)calloc(1, sizeof(double));
 	
@@ -165,7 +165,7 @@ static double bench(distgend_configT config) {
 		thread_args[i].config = &config;
 		int res = pthread_create(&threads[i],
 		    			 &thread_attr[i],
-		                         thread_func, &thread_args[i]);
+		                         thread_benchmark, &thread_args[i]);
 		assert(res == 0);
 	}
 	
