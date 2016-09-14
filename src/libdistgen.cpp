@@ -29,8 +29,9 @@
 // GByte/s measured for i cores is stored in [i-1]
 static double distgen_mem_bw_results[DISTGEN_MAXTHREADS];
 
-// threads and attributes
+// threads, barrier, and attributes
 static pthread_t threads[DISTGEN_MAXTHREADS];
+static pthread_barrier_t barrier;
 static pthread_attr_t thread_attr[DISTGEN_MAXTHREADS];
 
 // the configuration of the system
@@ -128,7 +129,8 @@ double distgend_is_membound(distgend_configT config) {
 static void *thread_func(void *arg) {
 	thread_argsT *thread_args = (thread_argsT*)arg;
 	double *ret = (double*)calloc(1, sizeof(double));
-
+	
+	pthread_barrier_wait(&barrier);
 	for (size_t i = 0; i < thread_args->config->number_of_threads; ++i) {
 		if (thread_args->tid == thread_args->config->threads_to_use[i]) {
 			double tsum = 0.0;
@@ -152,6 +154,12 @@ static double bench(distgend_configT config) {
 	
 	thread_argsT thread_args[system_config.number_of_threads];
 	
+	// inititalize barrier
+	int res = pthread_barrier_init(&barrier, 
+	    			       NULL,
+				       system_config.number_of_threads);
+	assert(res == 0);
+	
 	for (size_t i = 0; i<system_config.number_of_threads; ++i) {
 		thread_args[i].tid = i;
 		thread_args[i].config = &config;
@@ -168,6 +176,10 @@ static double bench(distgend_configT config) {
 		ret += *ret_tmp;
 		free (ret_tmp);
 	}
+	
+	// destroy barrier
+	res = pthread_barrier_destroy(&barrier);
+	assert(res == 0);
 
 	return ret;
 }
