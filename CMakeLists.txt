@@ -28,7 +28,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   endif()
 
   if ("${CMAKE_BUILD_TYPE}" STREQUAL "debug")
-    ADD_DEFINITIONS(-g3 -O0 -Weverything)
+    ADD_DEFINITIONS(-g3 -O0 -Weverything -Wno-c++98-compat-pedantic)
   endif()
 
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -60,6 +60,11 @@ endif()
 ########
 
 ########
+# pthread
+find_package (Threads REQUIRED)
+########
+
+########
 include_directories(include)
 
 # Compiling and linking
@@ -68,11 +73,7 @@ set_property(TARGET distgen PROPERTY CXX_STANDARD 11)
 INSTALL(TARGETS distgen DESTINATION "lib")
 INSTALL(FILES include/distgen/distgen.h DESTINATION "include/distgen")
 
-add_executable(dgen src/distgen.cpp)
-set_property(TARGET dgen PROPERTY CXX_STANDARD 11)
-target_link_libraries(dgen distgen)
-
-add_executable(distgen_example src/example.cpp )
-target_link_libraries(distgen_example distgen)
+add_executable(distgen_example src/example.cpp)
+target_link_libraries(distgen_example distgen ${CMAKE_THREAD_LIBS_INIT})
 set_property(TARGET distgen_example PROPERTY CXX_STANDARD 11)
 ########
