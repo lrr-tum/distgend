@@ -14,13 +14,12 @@ string( TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE )
 
 ########
 # General project settings
-project(distgend)
-# Enable support for external projects
-include(ExternalProject)
+project(ponci)
 ########
 
 ########
 # Compiler/linker options based on the different compilers
+#ADD_DEFINITIONS(-std=c++11)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   # Using Clang
   if ("${CMAKE_BUILD_TYPE}" STREQUAL "release")
@@ -28,13 +27,13 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   endif()
 
   if ("${CMAKE_BUILD_TYPE}" STREQUAL "debug")
-    ADD_DEFINITIONS(-g3 -O0 -Weverything)
+    ADD_DEFINITIONS(-g3 -O0 -Weverything -Wno-c++98-compat)
   endif()
 
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   # Using GCC
   if ("${CMAKE_BUILD_TYPE}" STREQUAL "release")
-    ADD_DEFINITIONS(-g -O2 -march=native -pthread)
+    ADD_DEFINITIONS(-g -O2 -march=native)
   endif()
 
   if ("${CMAKE_BUILD_TYPE}" STREQUAL "debug")
@@ -44,12 +43,11 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   # Using Intel C++
 
-  # CXX_STANDARD feature not working with older cmake + Intel
+  # CXX_STANDARD feature not working with older cmake, do manually
   ADD_DEFINITIONS(-std=c++11)
 
   if ("${CMAKE_BUILD_TYPE}" STREQUAL "release")
-    # Don't use -fast. IPO will remove our test code :)
-    ADD_DEFINITIONS(-g -O3 -no-prec-div -static -xHost)
+    ADD_DEFINITIONS(-g -fast)
   endif()
 
   if ("${CMAKE_BUILD_TYPE}" STREQUAL "debug")
@@ -60,27 +58,27 @@ endif()
 ########
 
 ########
-# OpenMP
-find_package(OpenMP REQUIRED)
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+# Threads
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 ########
 
-
 ########
+# Compiling and linking
 include_directories(include)
 
-# Compiling and linking
-add_library(distgen src/distgen_internal.cpp src/libdistgen.cpp)
-set_property(TARGET distgen PROPERTY CXX_STANDARD 11)
-INSTALL(TARGETS distgen DESTINATION "lib")
-INSTALL(FILES include/distgen/distgen.h DESTINATION "include/distgen")
+add_library(ponci src/ponci.cpp)
+set_property(TARGET ponci PROPERTY CXX_STANDARD 11)
+INSTALL(TARGETS ponci DESTINATION "lib")
+INSTALL(FILES include/ponci/ponci.h include/ponci/ponci.hpp DESTINATION "include/ponci")
 
-add_executable(dgen src/distgen.cpp)
-set_property(TARGET dgen PROPERTY CXX_STANDARD 11)
-target_link_libraries(dgen distgen)
 
-add_executable(distgen_example src/example.cpp )
-target_link_libraries(distgen_example distgen)
-set_property(TARGET distgen_example PROPERTY CXX_STANDARD 11)
+add_executable(ponci_example src/example.cpp)
+set_property(TARGET ponci_example PROPERTY CXX_STANDARD 11)
+target_link_libraries(ponci_example ponci)
+target_link_libraries(ponci_example Threads::Threads)
+
+add_executable(cgkill src/cgkill.cpp)
+set_property(TARGET ponci_example PROPERTY CXX_STANDARD 11)
+target_link_libraries(cgkill ponci)
 ########
