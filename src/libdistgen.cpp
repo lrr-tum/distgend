@@ -76,7 +76,7 @@ static void internal_init(distgend_initT init) {
 	// set a size of 50 MB
 	addDist(50000000);
 #endif
-#ifdef __QNXNTO__	
+#ifdef __QNXNTO__
 	// set a size of 10 MB
 	addDist(10000000);
 #endif
@@ -196,12 +196,10 @@ static void *thread_benchmark(void *arg) {
 	// TODO duplicated code in distgen_internal.cpp
 	unsigned int number_of_cpus = RMSK_SIZE(_syspage_ptr->num_cpu);
 	const int size = number_of_cpus * sizeof(unsigned int) * 2;
-	
-	unsigned int *rsizep = (unsigned int*)malloc(size);
-	if (rsizep == nullptr) {
-		assert(false);
-	}
-	memset((void*)rsizep, 0x00, size);
+
+	unsigned int *rsizep = (unsigned int *)malloc(size);
+	assert(rsizep != nullptr);
+	memset((void *)rsizep, 0x00, size);
 
 	*rsizep = number_of_cpus;
 
@@ -215,7 +213,7 @@ static void *thread_benchmark(void *arg) {
 	unsigned int *imaskp = rmaskp + number_of_cpus;
 	RMSK_SET(thread_args->tid, imaskp);
 
-	if ( ThreadCtl( _NTO_TCTL_RUNMASK_GET_AND_SET_INHERIT, rsizep) == -1) {
+	if (ThreadCtl(_NTO_TCTL_RUNMASK_GET_AND_SET_INHERIT, rsizep) == -1) {
 		assert(false);
 	}
 #endif
@@ -234,7 +232,7 @@ static void *thread_benchmark(void *arg) {
 		}
 	}
 #ifdef __QNXNTO__
-	free (rsizep);
+	free(rsizep);
 #endif
 	pthread_exit((void *)ret);
 }

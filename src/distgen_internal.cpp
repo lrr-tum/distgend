@@ -95,12 +95,10 @@ static void *init_memory_per_thread(void *arg) {
 	// TODO duplicated code in libdistgen.cpp
 	unsigned int number_of_cpus = RMSK_SIZE(_syspage_ptr->num_cpu);
 	const int size = number_of_cpus * sizeof(unsigned int) * 2;
-	
-	unsigned int *rsizep = (unsigned int*)malloc(size);
-	if (rsizep == nullptr) {
-		assert(false);
-	}
-	memset((void*)rsizep, 0x00, size);
+
+	unsigned int *rsizep = (unsigned int *)malloc(size);
+	assert(rsizep != nullptr);
+	memset((void *)rsizep, 0x00, size);
 
 	*rsizep = number_of_cpus;
 
@@ -114,7 +112,7 @@ static void *init_memory_per_thread(void *arg) {
 	unsigned int *imaskp = rmaskp + number_of_cpus;
 	RMSK_SET(tid, imaskp);
 
-	if ( ThreadCtl( _NTO_TCTL_RUNMASK_GET_AND_SET_INHERIT, rsizep) == -1) {
+	if (ThreadCtl(_NTO_TCTL_RUNMASK_GET_AND_SET_INHERIT, rsizep) == -1) {
 		assert(false);
 	}
 #endif
@@ -146,7 +144,7 @@ static void *init_memory_per_thread(void *arg) {
 	}
 
 #ifdef __QNXNTO__
-	free (rsizep);
+	free(rsizep);
 #endif
 
 	return nullptr;
